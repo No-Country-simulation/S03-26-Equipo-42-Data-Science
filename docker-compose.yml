@@ -8,10 +8,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
       POSTGRES_DB: ${POSTGRES_DB:-ecommerce}
+      AIRFLOW_DB: ${AIRFLOW_DB:-airflow}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
 
   pgadmin:
     image: dpage/pgadmin4
@@ -33,7 +35,7 @@ services:
     command: webserver
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres/${POSTGRES_DB:-ecommerce}
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres/${AIRFLOW_DB:-airflow}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__CORE__FERNET_KEY=''
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
@@ -56,7 +58,7 @@ services:
     command: scheduler
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres/${POSTGRES_DB:-ecommerce}
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres/${AIRFLOW_DB:-airflow}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW_CONN_POSTGRES_DEFAULT=postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres:5432/${POSTGRES_DB:-ecommerce}
     volumes:
@@ -74,8 +76,13 @@ services:
     user: "${AIRFLOW_UID:-50000}:0"
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres/${POSTGRES_DB:-ecommerce}
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres/${AIRFLOW_DB:-airflow}
       - AIRFLOW_CONN_POSTGRES_DEFAULT=postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres:5432/${POSTGRES_DB:-ecommerce}
+      - AIRFLOW_USERNAME=${AIRFLOW_USERNAME:-admin}
+      - AIRFLOW_PASSWORD=${AIRFLOW_PASSWORD:-admin}
+      - AIRFLOW_FIRSTNAME=${AIRFLOW_FIRSTNAME:-admin}
+      - AIRFLOW_LASTNAME=${AIRFLOW_LASTNAME:-admin}
+      - AIRFLOW_EMAIL=${AIRFLOW_EMAIL:-admin@admin.com}
     command: >
       bash -c "airflow db migrate &&
       airflow users create
