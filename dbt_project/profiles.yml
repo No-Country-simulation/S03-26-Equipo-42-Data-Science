@@ -1,0 +1,14 @@
+config_version: 2
+
+ecommerce_project:
+  outputs:
+    dev:
+      type: postgres
+      host: postgres
+      user: "{{ env_var('POSTGRES_USER', 'admin') }}"
+      pass: "{{ env_var('POSTGRES_PASSWORD', 'admin') }}"
+      port: 5432
+      dbname: "{{ env_var('POSTGRES_DB', 'ecommerce') }}"
+      schema: public
+      threads: 4
+  target: dev
