@@ -1,9 +1,11 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 from datetime import datetime, timedelta
 
-# Ruta del proyecto dbt dentro del contenedor
+# Configuración de rutas
 DBT_PROJECT_DIR = "/opt/airflow/dbt_project"
+CSV_FILE_PATH = f"{DBT_PROJECT_DIR}/seeds/br_ecommerce_churn.csv"
 
 default_args = {
     'owner': 'airflow',
@@ -18,28 +20,36 @@ default_args = {
 with DAG(
     'dbt_customer_churn_pipeline',
     default_args=default_args,
-    description='Pipeline de transformaciones dbt para el modelo de Churn (Medallion)',
-    schedule_interval=None,  # Ejecución manual por defecto
+    description='Pipeline optimizado con COPY y dbt (Medallion)',
+    schedule_interval=None,
     catchup=False,
-    tags=['dbt', 'churn', 'medallion'],
+    tags=['dbt', 'churn', 'optimized'],
 ) as dag:
 
-    # 1. Carga de datos crudos (Bronze)
-    dbt_seed = BashOperator(
-        task_id='dbt_seed',
-        bash_command=f"cd {DBT_PROJECT_DIR} && dbt seed --profiles-dir .",
+    # 1. Limpiar tabla Bronze (Ingestión rápida)
+    truncate_bronze = PostgresOperator(
+        task_id='truncate_bronze',
+        postgres_conn_id='postgres_default',
+        sql="TRUNCATE TABLE public.br_ecommerce_churn;",
     )
 
-    # 2. Ejecución de transformaciones (Silver & Gold)
+    # 2. Carga MASIVA usando comando COPY (Velocidad extrema)
+    copy_bronze = PostgresOperator(
+        task_id='fast_load_bronze',
+        postgres_conn_id='postgres_default',
+        sql=f"COPY public.br_ecommerce_churn FROM '{CSV_FILE_PATH}' DELIMITER ',' CSV HEADER;",
+    )
+
+    # 3. Transformaciones dbt (Silver & Gold)
     dbt_run = BashOperator(
         task_id='dbt_run',
         bash_command=f"cd {DBT_PROJECT_DIR} && dbt run --profiles-dir .",
     )
 
-    # 3. Pruebas de calidad de datos
+    # 4. Pruebas de Calidad
     dbt_test = BashOperator(
         task_id='dbt_test',
         bash_command=f"cd {DBT_PROJECT_DIR} && dbt test --profiles-dir .",
     )
 
-    dbt_seed >> dbt_run >> dbt_test
+    truncate_bronze >> copy_bronze >> dbt_run >> dbt_test
