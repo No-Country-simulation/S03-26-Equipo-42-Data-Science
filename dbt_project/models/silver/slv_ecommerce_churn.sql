@@ -3,6 +3,9 @@ WITH raw_data AS (
 )
 
 SELECT
+    -- Identidad Única
+    ROW_NUMBER() OVER () AS customer_id,
+
     -- Demografía
     COALESCE(CAST(CAST(NULLIF("Age", '') AS FLOAT) AS INT), 0) AS age,
     COALESCE("Gender", 'Other') AS gender,

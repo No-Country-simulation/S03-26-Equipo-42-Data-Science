@@ -4,12 +4,17 @@ WITH silver_data AS (
 
 dim_location AS (
     SELECT * FROM {{ ref('gld_dim_location') }}
+),
+
+dim_gender AS (
+    SELECT * FROM {{ ref('gld_dim_gender') }}
 )
 
 SELECT
-    -- Identificadores y Demografía (Normalizada)
+    -- Identidad y Demografía (Normalizada)
+    sd.customer_id,
     sd.age,
-    sd.gender,
+    dg.gender_id,
     dl.location_id,
     sd.signup_quarter,
 
@@ -50,3 +55,4 @@ SELECT
 
 FROM silver_data sd
 JOIN dim_location dl ON sd.city = dl.city AND sd.country = dl.country
+JOIN dim_gender dg ON sd.gender = dg.gender
