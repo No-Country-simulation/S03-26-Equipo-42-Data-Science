@@ -2,11 +2,14 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.operators.python import PythonOperator
+import pandas as pd
+import os
 from datetime import datetime, timedelta
 
 # Configuración de rutas
 DBT_PROJECT_DIR = "/opt/airflow/dbt_project"
 CSV_FILE_PATH = f"{DBT_PROJECT_DIR}/seeds/br_ecommerce_churn.csv"
+PROCESSED_DATA_DIR = "/opt/airflow/data/processed"
 
 default_args = {
     'owner': 'airflow',
@@ -42,6 +45,25 @@ def load_csv_to_postgres():
     sql = "COPY public.br_ecommerce_churn FROM STDIN WITH CSV HEADER DELIMITER ','"
     hook.copy_expert(sql, filename=CSV_FILE_PATH)
 
+def export_gold_to_csv():
+    """Exporta todas las tablas del esquema Gold a archivos CSV en @processed"""
+    hook = PostgresHook(postgres_conn_id='postgres_default')
+    
+    # Asegurar que el directorio existe
+    if not os.path.exists(PROCESSED_DATA_DIR):
+        os.makedirs(PROCESSED_DATA_DIR)
+        
+    # Obtener lista de tablas en public_gold
+    query_tables = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public_gold'"
+    tables = [row[0] for row in hook.get_records(query_tables)]
+    
+    for table in tables:
+        df = hook.get_pandas_df(f"SELECT * FROM public_gold.{table}")
+        timestamp = datetime.now().strftime("%Y%m%d")
+        file_name = f"{PROCESSED_DATA_DIR}/{table}_{timestamp}.csv"
+        df.to_csv(file_name, index=False)
+        print(f"Exportada tabla {table} a {file_name}")
+
 with DAG(
     'dbt_customer_churn_pipeline',
     default_args=default_args,
@@ -75,4 +97,10 @@ with DAG(
         bash_command=f"cd {DBT_PROJECT_DIR} && dbt test --profiles-dir .",
     )
 
-    prepare_bronze >> copy_bronze >> dbt_run >> dbt_test
+    # 5. Exportación a @processed (Solo si todo lo anterior es exitoso)
+    export_gold = PythonOperator(
+        task_id='export_gold_to_csv',
+        python_callable=export_gold_to_csv,
+    )
+
+    prepare_bronze >> copy_bronze >> dbt_run >> dbt_test >> export_gold
