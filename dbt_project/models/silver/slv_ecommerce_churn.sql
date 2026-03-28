@@ -1,11 +1,15 @@
 WITH raw_data AS (
     SELECT * FROM {{ source('bronze', 'br_ecommerce_churn') }}
+),
+
+averages AS (
+    SELECT AVG(CAST("Age" AS FLOAT)) as avg_age FROM raw_data
 )
 
 SELECT
     -- Demografía
-    CAST("Age" AS INT) AS age,
-    "Gender" AS gender,
+    COALESCE(CAST("Age" AS INT), (SELECT CAST(avg_age AS INT) FROM averages)) AS age,
+    COALESCE("Gender", 'Other') AS gender,
     "Country" AS country,
     "City" AS city,
 
