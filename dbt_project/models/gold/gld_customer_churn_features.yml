@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: gld_customer_churn_features
+    description: "Tabla final de features para el modelo de ML y análisis de negocio (Capa Gold)."
+    columns:
+      - name: risk_segment
+        description: "Segmento de riesgo calculado basado en comportamiento."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['High Risk', 'Medium Risk', 'Low Risk']
+      - name: avg_order_value_derived
+        description: "Valor promedio de orden calculado (LTV / Total Purchases)."
+        tests:
+          - not_null:
+              config:
+                where: "total_purchases > 0"

@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: slv_ecommerce_churn
+    description: "Tabla de clientes limpia y tipada (Capa Silver)."
+    columns:
+      - name: age
+        description: "Edad del cliente."
+        tests:
+          - not_null
+      - name: gender
+        description: "Género del cliente."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Male', 'Female', 'Other']
+      - name: country
+        description: "País de residencia."
+        tests:
+          - not_null
+      - name: is_churned
+        description: "Indicador binario de abandono (1=Sí, 0=No)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
