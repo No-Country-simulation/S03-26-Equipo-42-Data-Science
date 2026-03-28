@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: public # dbt seed lo sube por defecto al esquema configurado (public o el de dev)
+    tables:
+      - name: br_ecommerce_churn
+        description: "Dataset crudo de e-commerce sobre abandono de clientes cargado mediante dbt seed."
+        columns:
+          - name: Churned
+            description: "Variable objetivo: 1 si el cliente abandonó, 0 en caso contrario."
