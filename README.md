@@ -28,6 +28,7 @@ El objetivo principal es identificar patrones de comportamiento que señalen una
 ├── dbt_project/         # Modelos y transformaciones dbt
 ├── data/                # Datasets y archivos CSV
 ├── image/               # Imágenes y diagramas
+├── notebooks/           # Análisis exploratorios y prototipado
 ├── logs/                # Logs de Airflow
 ├── plugins/             # Plugins personalizados de Airflow
 ├── docker-compose.yml   # Orquestación de servicios
@@ -53,15 +54,24 @@ El objetivo principal es identificar patrones de comportamiento que señalen una
 
 ### Acceso a Servicios
 - **Airflow Webserver**: [http://localhost:8080](http://localhost:8080)
+- **JupyterLab**: [http://localhost:8888](http://localhost:8888)
 - **pgAdmin**: [http://localhost:5050](http://localhost:5050)
 - **Postgres**: localhost:5432
 
-## Metodología (EDA y Modelado)
-El proyecto sigue un enfoque riguroso de ciencia de datos:
-1. **EDA**: Limpieza e identificación de correlaciones clave.
-2. **Feature Engineering**: Creación de métricas de engagement y puntuación de actividad.
-3. **Entrenamiento**: Evaluación de múltiples modelos (Random Forest, XGBoost, etc.).
-4. **Evaluación**: Priorización de la métrica **Recall** (> 0.7) para capturar el máximo de clientes en riesgo.
+## Metodología (Ciclo de Vida de los Datos)
+El proyecto sigue un enfoque iterativo diseñado para garantizar la calidad y reproducibilidad de los resultados:
+
+1. **EDA Inicial (Exploración de Calidad)**:
+   - Inspección rápida de `data/raw` para entender tipos de datos, nulos y consistencia.
+   - Definición de reglas de limpieza para el proceso de transformación.
+
+2. **ETL / Pipeline (Automatización)**:
+   - **Extract & Load**: Ingesta del dataset a PostgreSQL orquestado por **Airflow**.
+   - **Transform (dbt)**: Limpieza formal, normalización y creación de modelos analíticos en el warehouse.
+
+3. **EDA Profundo y Modelado**:
+   - Análisis de correlaciones y distribuciones sobre los datos transformados.
+   - Entrenamiento de modelos (Random Forest, XGBoost) priorizando el **Recall (> 0.7)** para maximizar la detección de clientes en riesgo de churn.
 
 ---
 *Este proyecto fue desarrollado por el Equipo 42 como parte de la simulación de No Country.*

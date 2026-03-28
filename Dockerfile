@@ -11,4 +11,10 @@ RUN apt-get update \
 USER airflow
 RUN pip install --no-cache-dir \
     dbt-postgres \
-    apache-airflow-providers-postgres
+    apache-airflow-providers-postgres \
+    jupyterlab \
+    pandas \
+    matplotlib \
+    seaborn \
+    sqlalchemy \
+    psycopg2-binary
