@@ -3,8 +3,7 @@ WITH silver_data AS (
 )
 
 SELECT
-    -- Identificadores y Demografía (Pasar directamente)
-    -- Asumimos que la tabla silver ya tiene un ID si existiera (aquí usamos métricas de cliente)
+    -- Identificadores y Demografía
     age,
     gender,
     country,
@@ -12,23 +11,23 @@ SELECT
     signup_quarter,
 
     -- Métricas de Lealtad (Capa Gold: Features Engineering)
-    membership_years,
-    total_purchases,
-    lifetime_value,
-    (lifetime_value / NULLIF(total_purchases, 0)) AS avg_order_value_derived,
+    ROUND(CAST(membership_years AS NUMERIC), 3) AS membership_years,
+    ROUND(CAST(total_purchases AS NUMERIC), 3) AS total_purchases,
+    ROUND(CAST(lifetime_value AS NUMERIC), 3) AS lifetime_value,
+    ROUND(CAST((lifetime_value / NULLIF(total_purchases, 0)) AS NUMERIC), 3) AS avg_order_value_derived,
 
     -- Indicadores de Engagement (Gold)
     login_frequency,
-    avg_session_duration,
-    pages_per_session,
-    social_media_engagement_score,
-    mobile_app_usage_score,
+    ROUND(CAST(avg_session_duration AS NUMERIC), 3) AS avg_session_duration,
+    ROUND(CAST(pages_per_session AS NUMERIC), 3) AS pages_per_session,
+    ROUND(CAST(social_media_engagement_score AS NUMERIC), 3) AS social_media_engagement_score,
+    ROUND(CAST(mobile_app_usage_score AS NUMERIC), 3) AS mobile_app_usage_score,
     payment_method_diversity,
 
     -- Indicadores de Riesgo de Churn (Features clave)
-    cart_abandonment_rate,
+    ROUND(CAST(cart_abandonment_rate AS NUMERIC), 3) AS cart_abandonment_rate,
     customer_service_calls,
-    returns_rate,
+    ROUND(CAST(returns_rate AS NUMERIC), 3) AS returns_rate,
     days_since_last_purchase,
 
     -- Flag de Riesgo (Ejemplo de Regla de Negocio Gold)
@@ -39,8 +38,8 @@ SELECT
     END AS risk_segment,
 
     -- Marketing Feature
-    discount_usage_rate,
-    email_open_rate,
+    ROUND(CAST(discount_usage_rate AS NUMERIC), 3) AS discount_usage_rate,
+    ROUND(CAST(email_open_rate AS NUMERIC), 3) AS email_open_rate,
     product_reviews_written,
 
     -- Variable Objetivo

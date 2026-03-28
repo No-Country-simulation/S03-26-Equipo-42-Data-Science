@@ -36,7 +36,7 @@ SELECT
     -- Engagement Digital
     CAST(NULLIF("Social_Media_Engagement_Score", '') AS FLOAT) AS social_media_engagement_score,
     CAST(NULLIF("Mobile_App_Usage", '') AS FLOAT) AS mobile_app_usage_score,
-    CAST(NULLIF("Payment_Method_Diversity", '') AS FLOAT)::INT AS payment_method_diversity,
+    COALESCE(CAST(NULLIF("Payment_Method_Diversity", '') AS FLOAT)::INT, 0) AS payment_method_diversity,
 
     -- Valor Financiero
     CAST(NULLIF("Lifetime_Value", '') AS FLOAT) AS lifetime_value,
