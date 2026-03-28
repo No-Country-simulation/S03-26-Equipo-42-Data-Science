@@ -1,0 +1,5 @@
+signup_quarter,total_customers,churn_rate,avg_lifetime_value,avg_age
+Q1,12453,0.2932,1443.44,35.8
+Q2,12521,0.2967,1439.75,36.1
+Q3,12558,0.2843,1436.21,36.0
+Q4,12468,0.2818,1443.14,35.8

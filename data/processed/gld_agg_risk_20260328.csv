@@ -1,0 +1,4 @@
+risk_segment,total_customers,churn_rate,avg_lifetime_value,avg_age
+Medium Risk,32893,0.2655,1444.63,35.9
+Low Risk,9678,0.1183,1852.86,36.0
+High Risk,7429,0.6156,885.86,36.0

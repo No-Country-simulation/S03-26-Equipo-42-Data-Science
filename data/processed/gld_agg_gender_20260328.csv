@@ -1,0 +1,4 @@
+gender_id,gender,total_customers,churn_rate,avg_lifetime_value,avg_age
+1,Female,25116,0.2897,1442.15,35.9
+2,Male,23947,0.2873,1438.8,35.9
+3,Other,937,0.3127,1446.27,35.5
