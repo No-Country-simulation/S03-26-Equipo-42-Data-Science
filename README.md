@@ -31,7 +31,7 @@ Para este proyecto, el estado de abandono (Churn) viene **predefinido como una e
 ```
 
 ## Metodología Técnica y Pipeline
-* **Conjunto de Datos:** E-commerce Customer Behavior Dataset.
+* **Conjunto de Datos:** [E-commerce Customer Behavior Dataset](https://www.kaggle.com/datasets/dhairyajeetsingh/ecommerce-customer-behavior-dataset).
 * **Modelos Evaluados:** Regresión Logística (Baseline), Random Forest y XGBoost.
 * **Modelo Final:** Random Forest optimizado mediante GridSearchCV.
 * **Métricas de Éxito:** Se priorizó el **Recall (83%)** para minimizar los falsos negativos y garantizar la detección de la mayor cantidad posible de clientes en riesgo real.
