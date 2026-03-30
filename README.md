@@ -1,52 +1,56 @@
-# Propuesta de Proyecto: E-commerce Churn Model
+# E-commerce Churn Model: Retención y Segmentación de Riesgo
 
 ## Visión General y Contexto de Negocio
-Las empresas de retail digital necesitan identificar patrones de abandono de manera temprana para aumentar la retención. Este proyecto desarrolla una solución analítica integral que identifica señales de fuga y genera *insights* accionables para estrategias de fidelización en el sector e-commerce.
+Las empresas de retail digital necesitan identificar patrones de abandono de manera temprana para aumentar la retención. Este proyecto desarrolla una solución analítica integral que identifica señales de fuga y genera insights accionables, dado que retener a un cliente es hasta 5 veces más económico que adquirir uno nuevo.
 
 ## Objetivos del Proyecto
-* **Objetivo Principal:** Predecir la probabilidad de abandono de clientes mediante Machine Learning para permitir al negocio activar estrategias de retención tempranas.
-* **Objetivos Específicos:** Identificar patrones de comportamiento, detectar señales tempranas de inactividad y generar recomendaciones estratégicas basadas en datos.
+* **Objetivo Principal:** Predecir la probabilidad de abandono de clientes mediante Machine Learning para activar estrategias de retención tempranas.
+* **Objetivos Específicos:** Identificar patrones de comportamiento transaccional, detectar señales de inactividad y perfilar segmentos de riesgo (Alto, Medio, Bajo).
 
-## Definición Propuesta de "Churn"
-* **Cliente Inactivo:** Todo usuario que no haya realizado una transacción en los últimos *X* días. Umbral a definir tras evaluar la distribución de frecuencias de compra durante el Análisis Exploratorio de Datos (EDA).
+## Definición de "Churn"
+Para este proyecto, el estado de abandono (Churn) viene **predefinido como una etiqueta binaria (0 = Retenido, 1 = Fugado)** en el dataset original. Esto permite un enfoque de aprendizaje supervisado directo, sin necesidad de calcular umbrales de inactividad de forma manual.
 
 ## Equipo y Fases de Colaboración
-* **Fase 1: Datos (Data Engineer).** Ingesta de datos crudos, limpieza inicial, tratamiento de nulos y disponibilidad en el entorno de trabajo.
-* **Fase 2: Modelado (Data Scientist).** Análisis exploratorio (EDA), ingeniería de características, entrenamiento del modelo predictivo y segmentación por riesgo.
-* **Fase 3: Visualización (Data Viz).** Diseño del dashboard, conexión con los resultados del modelo y creación de reportes visuales.
+* **Data Science & ML (Marco Olivares):** Limpieza de datos, Análisis Exploratorio (EDA), Ingeniería de Características, entrenamiento del modelo predictivo y segmentación de riesgo.
+* **Data Engineering (Abraham Cabrera):** Automatización del pipeline de datos, ingesta en producción y despliegue del modelo para inferencia continua.
+* **Data Visualization (Johanna Procopio):** Diseño del dashboard interactivo, conexión con resultados y creación de reportes visuales para el usuario final.
 
 ## Estructura del Proyecto
 ```text
-├── data/
-│   ├── raw/           # Datos originales inmutables
-│   └── processed/     # Datos limpios listos para modelado
-├── notebooks/         # Jupyter notebooks para EDA y experimentación
-├── src/               # Scripts de Python (pipelines, entrenamiento)
 ├── dashboards/        # Archivos de la herramienta de BI
+├── data/
+│   ├── processed/     # Datos limpios y con predicciones para el dashboard
+│   └── raw/           # Datos originales inmutables (ecommerce_customer_data)
 ├── docs/              # Documentación técnica y de negocio
+├── models/            # Artefactos exportados (modelo_churn_rf.pkl, scaler_churn.pkl)
+├── notebooks/         # Notebook principal (EDA, Limpieza y Modelado)
+├── src/               # Scripts de Python (preprocess.py, predict.py)
+├── .gitignore         # Archivos ignorados por el control de versiones
 ├── README.md          # Descripción general del proyecto
 └── requirements.txt   # Dependencias para reproducibilidad
 ```
+
 ## Metodología Técnica y Pipeline
-* **Conjunto de Datos:** E-commerce Customer Behavior Dataset (obtenido de Kaggle).
-* **Modelos a evaluar:** Regresión Logística (baseline), Random Forest y XGBoost.
-* **Métricas de éxito:** F1-Score y Recall (priorizando minimizar los falsos negativos para no omitir clientes en riesgo).
-* **Reproducibilidad e Interpretabilidad:** Separación estricta de validación y análisis de importancia de variables para entender los factores de riesgo.
+* **Conjunto de Datos:** E-commerce Customer Behavior Dataset.
+* **Modelos Evaluados:** Regresión Logística (Baseline), Random Forest y XGBoost.
+* **Modelo Final:** Random Forest optimizado mediante GridSearchCV.
+* **Métricas de Éxito:** Se priorizó el **Recall (83%)** para minimizar los falsos negativos y garantizar la detección de la mayor cantidad posible de clientes en riesgo real.
 
 ## Dashboard Analítico e Insights
-* **Métricas Clave:** Tasa global de churn, precisión del modelo, distribución por nivel de riesgo (Alto, Medio, Bajo).
-* **Recomendaciones:** Estrategias de retención priorizadas (descuentos dirigidos, re-engagement) basadas en los perfiles de riesgo identificados.
+* **Métricas Clave:** Tasa global de churn, distribución por nivel de riesgo (Alto, Medio, Bajo).
+* **Recomendaciones:** Estrategias de retención dirigidas específicamente a los **2,041 clientes** identificados en el segmento de Riesgo Alto.
 
 ## Entregables
-1. **Documento de Negocio:** Definición formal de churn y objetivos.
-2. **Reporte EDA:** Visualizaciones y hallazgos clave del comportamiento.
-3. **Pipeline Reproducible:** Código fuente, dataset procesado con score de riesgo y modelo entrenado.
-4. **Dashboard Interactivo:** Reporte visual accesible para equipos no técnicos.
-5. **Informe Final:** Resumen de insights y recomendaciones de acción.
+1. **Reporte EDA:** Visualizaciones y hallazgos clave de comportamiento.
+2. **Pipeline Reproducible:** Scripts de limpieza (`src/`), modelo entrenado (`.pkl`) y escalador.
+3. **Dataset Puntuado:** Datos procesados con el *score* de probabilidad de riesgo añadido.
+4. **Dashboard Interactivo:** Reporte visual accionable para equipos de Marketing.
 
 ## Reproducibilidad y Setup
 Para replicar el entorno de trabajo y ejecutar el pipeline técnico:
 
 1. Clonar el repositorio.
 2. Crear un entorno virtual.
-3. Instalar las dependencias ejecutando: `pip install -r requirements.txt`
+3. Instalar las dependencias ejecutando: 
+   ```bash
+   pip install -r requirements.txt
